@@ -32,34 +32,35 @@
                 </div>
               </div>
 
-              <div class="cards">
+              <div class="cards" v-for="data in gitData.items" :key="data.id">
                 <div class="employee">
                   <input type="checkbox" name="" id="">
-                  <img src="http://api.randomuser.me/portraits/men/22.jpg" alt="avatar">
+                  <img :src="data.owner.avatar_url" alt="avatar">
                   <div class="user">
-                    <div class="name">Chinedu Ohagwu</div>
-                    <div class="role">Software Developer</div>
+                    <div class="name">{{data.name}}</div>
+                    <div class="role">{{data.owner.type}}</div>
                   </div>
                 </div>
 
                 <div class="salary" style="width: 15%">
                   <div class="amount">
-                    $4,0000
+                    ${{data.score}}
                   </div>
-                  <div class="time"> Full Time</div>
+                  <div class="time"> {{data.owner.login}}</div>
                 </div>
 
                 <div class="status" style="width:15%">
-                  <div class="period">Test Period</div>
-                  <div class="duration">2 months</div>
+                  <div class="period">{{data.default_branch}}</div>
+                  <div class="duration"> {{data.forks}} months</div>
                 </div>
 
                 <div class="manage" >
                   <i class="far fa-edit"></i>
                   <div class="line"></div>
-                  <i class="far fa-trash-alt"></i>
+                  <i class="delete far fa-trash-alt"></i>
                 </div>
               </div>
+
             </div>
           </div>
        
@@ -78,6 +79,27 @@ export default {
     Header,
     Button,
     Sidebar
+  },
+  data: function () {
+    return {
+      gitData: ''
+    }
+  },
+  methods: {
+    getUser: function () {
+      let vm = this
+      console.log('tested')
+      fetch('https://api.github.com/search/repositories?q=tetris+language:assembly&sort=stars&order=desc&page=1&per_page=7')
+        .then(function(response) {
+          return response.json();
+        })
+        .then(function(myJson) {
+          vm.gitData = myJson
+        });
+    }
+  },
+  created: function () {
+    this.getUser()
   }
 }
 </script>
@@ -89,6 +111,7 @@ body {
   // padding: 60px 100px;
 }
 .inner-container {
+    transition: box-shadow 0.3s ease-in-out;
     box-shadow: 2px 4px 20px -4px rgba(0, 0, 0, 0.1);
     border: 1px solid #ececec;
     border-radius: 20px;
@@ -128,6 +151,7 @@ body {
         }
       }
       .cards {
+        cursor: pointer;
         margin-bottom: 15px;
         align-items: center;
         background: white;
@@ -135,14 +159,17 @@ body {
         padding: 18px;
         display: flex;
         justify-content: space-between;
+        transition: box-shadow .3s;
         box-shadow: 2px 4px 20px -4px rgba(0, 0, 0, 0.1);
 
         .employee {
           display: flex;
-          justify-content: space-between;
+          // justify-content: space-between;
           align-items: center;
           width: 31%;
-
+          input, img {
+            margin-right: 20px;
+          }
           .role {
             font-weight: lighter;
             font-size: 13px;
@@ -184,6 +211,16 @@ body {
             font-size: 30px;
             color: silver;
             cursor: pointer;
+          }
+        }
+
+        &:hover {
+          transform: scale(1.02);
+          box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+          .manage {
+            .delete {
+              color: tomato;
+            }
           }
         }
       }
